@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário Multitipo</title>
+</head>
+<body>
+    <h1>Formulário de coleta</h1>
+    <p>Preencha os dados abaixo:</p>
+
+    <form id="multiForm">
+        <label for="nome">Nome completo:</label><br>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required><br><br>
+
+        <label for="email">E-mail:</label><br>
+        <input type="email" id="email" name="email" placeholder="usuario@dominio.com" required><br><br>
+
+        <label for="idade">Idade:</label><br>
+        <input type="number" id="idade" name="idade" placeholder="Digite sua idade" min="0" max="130" required><br><br>
+
+        <label for="nascimento">Data de nascimento:</label><br>
+        <input type="date" id="nascimento" name="nascimento" required><br><br>
+
+        <label for="estadoCivil">Estado Civil:</label><br>
+        <select id="estadoCivil" name="estadoCivil" required>
+            <option value="" disabled selected>Selecione uma opção</option>
+            <option value="Solteiro(a)">Solteiro(a)</option>
+            <option value="Casado(a)">Casado(a)</option>
+            <option value="Divorciado(a)">Divorciado(a)</option>
+            <option value="Viúvo(a)">Viúvo(a)</option>
+            <option value="União Estável">União Estável</option>
+        </select><br><br>
+
+        <label>Gênero:</label><br>
+        <input type="radio" name="genero" value="Feminino" required> Feminino<br>
+        <input type="radio" name="genero" value="Masculino"> Masculino<br>
+        <input type="radio" name="genero" value="Não-binário"> Não-binário<br>
+        <input type="radio" name="genero" value="Prefiro não informar"> Prefiro não informar<br><br>
+
+        <input type="checkbox" id="termos" name="termos" value="Aceito os termos" required>
+        <label for="termos">Aceito os termos de uso e política de privacidade</label><br><br>
+
+        <button type="submit">Enviar formulário</button>
+    </form>
+
+    <script>
+        const form = document.getElementById('multiForm');
+
+        function getRadioValue(radioName) {
+            const radioButtons = document.querySelectorAll(`input[name="${radioName}"]`);
+            for (let radio of radioButtons) {
+                if (radio.checked) {
+                    return radio.value;
+                }
+            }
+            return null;
+        }
+
+        function exibirAlertaComDados(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const idade = document.getElementById('idade').value;
+            const nascimento = document.getElementById('nascimento').value;
+            const estadoCivilSelect = document.getElementById('estadoCivil');
+            const estadoCivil = estadoCivilSelect.options[estadoCivilSelect.selectedIndex]?.value || '';
+            const genero = getRadioValue('genero');
+            const termosCheckbox = document.getElementById('termos');
+            const aceitaTermos = termosCheckbox.checked ? termosCheckbox.value : 'Não aceito os termos';
+
+            let erros = [];
+
+            if (nome === "") erros.push("Nome completo não foi preenchido.");
+            if (email === "") erros.push("E-mail não foi preenchido.");
+            if (email !== "" && !email.includes('@')) erros.push("E-mail inválido (falta '@').");
+            if (idade === "") erros.push("Idade não foi preenchida.");
+            else if (isNaN(idade) || idade < 0 || idade > 130) erros.push("Idade inválida (deve ser entre 0 e 130).");
+            if (nascimento === "") erros.push("Data de nascimento não foi preenchida.");
+            if (!estadoCivil || estadoCivil === "") erros.push("Selecione um estado civil.");
+            if (!genero) erros.push("Selecione uma opção de gênero.");
+            if (!termosCheckbox.checked) erros.push("Você precisa aceitar os termos.");
+
+            if (erros.length > 0) {
+                alert("Erros no formulário:\n\n" + erros.join("\n") + "\n\nCorrija e tente novamente.");
+                return;
+            }
+
+            let dataFormatada = nascimento;
+            if (nascimento && nascimento.includes('-')) {
+                const partes = nascimento.split('-');
+                dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            let mensagem = "Informações do formulário:\n\n";
+            mensagem += `Nome completo: ${nome}\n`;
+            mensagem += `E-mail: ${email}\n`;
+            mensagem += `Idade: ${idade} anos\n`;
+            mensagem += `Data de nascimento: ${dataFormatada}\n`;
+            mensagem += `Estado Civil: ${estadoCivil}\n`;
+            mensagem += `Gênero: ${genero}\n`;
+            mensagem += `Termos: ${aceitaTermos}`;
+
+            alert(mensagem);
+        }
+
+        form.addEventListener('submit', exibirAlertaComDados);
+        form.setAttribute('novalidate', 'novalidate');
+    </script>
+</body>
+</html>
